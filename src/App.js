@@ -1,22 +1,52 @@
-import logo from './logo.svg';
-import './App.css';
+import {useEffect, useState} from 'react';
+import axios from 'axios';
 
 function App() {
+  const [smrName, setSmrName] = useState("")
+  const [smrLevel, setSmrLevel] = useState("")
+  const [data, setData] = useState()
+
+  const getSmr = async() => {
+    await axios.get(`https://br1.api.riotgames.com/lol/summoner/v4/summoners/by-name/${smrName}?api_key=RGAPI-a3d0d0f7-361b-4589-9262-f64bdd2fc356`)
+    .then(res => {
+      const response = res.data;
+      console.log("Respose: ", response)
+      setData(response)
+    })
+  }
+
+  useEffect(() => {
+    if (data) {
+      setSmrName(data.name)
+      setSmrLevel(data.summonerLevel)
+
+      console.log(data.name)
+    }
+
+  }, [data])
+
   return (
     <div className="App">
       <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
+        <p>Coloque seu nick:</p>
+        <input onChange={(e) => setSmrName(e.currentTarget.value)} value={smrName}/>
+        <button onClick={getSmr}>Buscar</button>
         <p>
-          Edit <code>src/App.js</code> and save to reload.
+          Resultado para:
         </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
+
+        {data ? (
+        <>
+        <p>
+          Nome: {smrName}
+        </p>
+        <p>
+          Level: {smrLevel}
+        </p>
+        </>) : <p>Não encontrei nenhum invocador!</p> 
+        }
+        
+
       </header>
     </div>
   );
